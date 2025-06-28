@@ -11,18 +11,15 @@ variable "aws_profile" {
   default = "terraform-user"
 }
 
-# 🔁 Replace this with your actual EC2 Key Pair
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
   public_key = file("~/.ssh/email_qa.pub")  # You must have this key locally
 }
 
-# 🔁 Public GitHub repo URL (HTTPS only)
 variable "public_repo" {
   default = "https://github.com/amit-bonterra/email-qa.git"
 }
 
-# If your entry point is in a subfolder like src/app.js
 variable "startup_file" {
   default = "src/app.js"
 }
