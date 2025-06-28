@@ -13,5 +13,10 @@
     "author": "",
     "license": "ISC",
     "description": "",
-    "type": "module"
+    "dependencies": {
+        "@aws-sdk/client-bedrock-runtime": "^3.839.0",
+        "cors": "^2.8.5",
+        "dotenv": "^17.0.0",
+        "express": "^5.1.0"
+    }
 }
