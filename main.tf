@@ -110,7 +110,8 @@ resource "aws_instance" "node_server" {
               # Start the app using PM2
               pm2 start ${var.startup_file} --name=email-api
               pm2 save
-              pm2 startup systemd -u ubuntu --hp /home/ubuntu | bash
+              pm2 startup systemd -u ubuntu --hp /home/ubuntu | grep sudo | bash
+
               EOF
 
   tags = {
