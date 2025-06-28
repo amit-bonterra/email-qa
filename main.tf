@@ -19,7 +19,7 @@ resource "aws_key_pair" "deployer" {
 
 # 🔁 Public GitHub repo URL (HTTPS only)
 variable "public_repo" {
-  default = "https://github.com/your-name/email-qa.git"
+  default = "https://github.com/amit-bonterra/email-qa.git"
 }
 
 # If your entry point is in a subfolder like src/app.js
@@ -65,17 +65,18 @@ resource "aws_security_group" "node_api_sg" {
   }
 }
 
-data "aws_ami" "amazon_linux" {
+data "aws_ami" "ubuntu" {
   most_recent = true
-  owners      = ["amazon"]
+  owners      = ["099720109477"] # Canonical
+
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
   }
 }
 
 resource "aws_instance" "node_server" {
-  ami                    = data.aws_ami.amazon_linux.id
+  ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t3.micro"
   key_name               = aws_key_pair.deployer.key_name
   vpc_security_group_ids = [aws_security_group.node_api_sg.id]
@@ -83,35 +84,33 @@ resource "aws_instance" "node_server" {
   user_data = <<-EOF
               #!/bin/bash
               exec > /var/log/user-data.log 2>&1
-              yum update -y
 
-              # Install Node.js and Git
-              curl -sL https://rpm.nodesource.com/setup_18.x | bash -
-              yum install -y nodejs git unzip
+              # Update and install essentials
+              sudo apt update -y
+              sudo apt install -y curl git unzip
 
-              # Install PM2 globally
-              npm install -g pm2
+              # Install Node.js and npm
+              curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+              sudo apt install -y nodejs
 
-              # Install AWS CLI
-              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-              unzip awscliv2.zip
-              ./aws/install
+              # Install pm2 globally
+              sudo npm install -g pm2
 
               # Clone your app
-              cd /home/ec2-user
+              cd /home/ubuntu
               git clone ${var.public_repo} app
               cd app
 
-              # Install node modules
+              # Install app dependencies
               npm install
 
-              # Create .env with AWS region (modify as needed)
+              # Create .env with AWS region
               echo "AWS_REGION=${var.aws_region}" > .env
 
               # Start the app using PM2
               pm2 start ${var.startup_file} --name=email-api
               pm2 save
-              pm2 startup systemd -u ec2-user --hp /home/ec2-user | grep sudo | bash
+              pm2 startup systemd -u ubuntu --hp /home/ubuntu | bash
               EOF
 
   tags = {
