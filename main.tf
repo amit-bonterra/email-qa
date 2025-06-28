@@ -131,7 +131,7 @@ resource "aws_instance" "node_server" {
               export HOME=/home/ubuntu
 
               # Install app dependencies
-              npm install
+              sudo npm install
 
               # Create .env with AWS region
               echo "AWS_REGION=${var.aws_region}" > .env
