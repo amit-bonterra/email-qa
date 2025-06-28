@@ -100,6 +100,7 @@ resource "aws_instance" "node_server" {
               cd /home/ubuntu
               git clone ${var.public_repo} app
               cd app
+              export HOME=/home/ubuntu
 
               # Install app dependencies
               npm install
@@ -107,10 +108,10 @@ resource "aws_instance" "node_server" {
               # Create .env with AWS region
               echo "AWS_REGION=${var.aws_region}" > .env
 
-              # Start the app using PM2
+              # PM2 startup and app launch
+              sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu
               pm2 start ${var.startup_file} --name=email-api
               pm2 save
-              pm2 startup systemd -u ubuntu --hp /home/ubuntu | grep sudo | bash
 
               EOF
 
