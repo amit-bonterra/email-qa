@@ -110,8 +110,8 @@ resource "aws_instance" "node_server" {
 
               # PM2 startup and app launch
               sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu
-              pm2 start ${var.startup_file} --name=email-api
-              pm2 save
+              sudo -u ubuntu pm2 start /home/ubuntu/app/${var.startup_file} --name=email-api
+              sudo -u ubuntu pm2 save
 
               EOF
 

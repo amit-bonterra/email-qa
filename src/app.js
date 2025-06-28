@@ -1,7 +1,7 @@
-import express from 'express';
-import cors from 'cors';
-import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
-import * as dotenv from 'dotenv';
+const express = require('express');
+const cors = require('cors');
+const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
