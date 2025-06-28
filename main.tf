@@ -77,7 +77,7 @@ data "aws_ami" "amazon_linux" {
 resource "aws_instance" "node_server" {
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = "t3.micro"
-  key_name               = var.key_name
+  key_name               = aws_key_pair.deployer.key_name
   vpc_security_group_ids = [aws_security_group.node_api_sg.id]
 
   user_data = <<-EOF
